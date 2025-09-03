@@ -1,0 +1,25 @@
+version: '3'
+services:
+  ocr_api:
+    build: .
+    ports:
+      - 8312:8312
+    image: ocr-service-all-in-one
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    working_dir: /ocr_service
+    restart: always
+
+    volumes:
+      - ./:/ocr_service
+    command: uvicorn app:app --host 0.0.0.0 --port 8312 --reload --workers 2
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+networks:
+  mynetwork: {}
